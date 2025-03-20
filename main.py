@@ -13,7 +13,7 @@ import io
 import json
 
 # Streamlit UI
-st.title("AI Web Scraper")
+st.title("Web Data Looter")
 st.write("Enter a website URL to scrape and analyze its content.")
 
 url = st.text_input("Enter Website URL", help="Enter the complete URL including http:// or https://")
@@ -83,14 +83,17 @@ if "dom_content" in st.session_state:
                     if "parsed_data" in st.session_state:
                         # Convert the parsed data to a DataFrame
                         if isinstance(st.session_state.parsed_data, dict):
+                            # Ensure the dictionary is flattened for CSV export
                             df = pd.DataFrame([st.session_state.parsed_data])
                         elif isinstance(st.session_state.parsed_data, list):
+                            # If it's a list of dictionaries, create a DataFrame directly
                             df = pd.DataFrame(st.session_state.parsed_data)
                         else:
+                            # Handle unexpected data types
                             df = pd.DataFrame([{"result": str(st.session_state.parsed_data)}])
                         
                         # Create a download button for CSV
-                        csv = df.to_csv(index=False)
+                        csv = df.to_csv(index=False, quoting=1)  # quoting=1 ensures proper formatting
                         st.download_button(
                             label="Download Results as CSV",
                             data=csv,
